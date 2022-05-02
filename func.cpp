@@ -21,7 +21,7 @@ size_t write_data(void* ptr, size_t size, size_t nmemb, FILE* stream) { // объек
 
 
 void showWallet() { // эта функция считывает и выводит список курсов валдют из файла
-	std::cout << "Курс валют:" << std::endl;
+	
 	xml_document doc; // создание объекта класса xml_document
 	xml_parse_result result = doc.load_file("daily.xml"); // открытие файла по заданному пути
 	if (!doc.load_file("daily.xml")) { // проверка открытия файла
@@ -29,6 +29,7 @@ void showWallet() { // эта функция считывает и выводит список курсов валдют из ф
 		throw std::invalid_argument("no file in directory"); // бросок исключения по открытию файла
 	}
 	xml_node Wallet = doc.child("ValCurs"); // выбор ноды из тега <ValCurs></ValCurs> в файле xml
+	std::cout << "Курс валют " << Wallet.attribute("Date").as_string() << std::endl;
 	for (pugi::xml_node tool : Wallet.children("Valute")) // перебор дочерних тегов нод
 	{
 		std::cout << "Валюта: ";
@@ -38,7 +39,7 @@ void showWallet() { // эта функция считывает и выводит список курсов валдют из ф
 		}
 		for (pugi::xml_node child : tool.children()) // перебор строк в нодах для вывода
 		{
-			std::cout  << child.text().as_string() << "\t\t";
+			std::cout << child.name() << ": " << child.text().as_string() << "\t";
 		}
 		std::cout << std::endl;
 	}
@@ -67,14 +68,11 @@ void convertWallet() { // Эта функция конвертирует валюту
 		for (pugi::xml_node tool : Wallet.children("Valute")) { // перебор дочерних тегов нод
 			if (str == tool.child("CharCode").text().as_string()) { // сравнение значения ноды с введённой строкой
 				namestr = tool.child("Name").text().as_string(); // запись ноды Name в переменную типа строка
-				convertmoney = money / tool.child("Nominal").text().as_double() * tool.child("Value").text().as_double(); // формула расчёта конвертации
-			}
-			else {
-				throw std::invalid_argument("unknown wallet type"); // бросок исключения по несовпадению буквенного кода
-				break;
+				convertmoney = money * tool.child("Nominal").text().as_double() / tool.child("Value").text().as_double(); // формула расчёта конвертации
 			}
 		}
-		std::cout << "Валюта " << namestr << " = " << convertmoney << " рублей.";
+		if (!convertmoney) std::cout << "Вы ввели неправильный буквенный код.";
+		std::cout << money << " рублей " << " = " << convertmoney << " " << namestr << std::endl;
 	}
 }
 
@@ -100,13 +98,10 @@ void convertWalletIntoRub() { // конвертация валюты в рубли
 		for (pugi::xml_node tool : Wallet.children("Valute")) { // перебор дочерних тегов нод
 			if (str == tool.child("CharCode").text().as_string()) { // сравнение значения ноды с введённой строкой
 				namestr = tool.child("Name").text().as_string(); // запись ноды Name в переменную типа строка
-				convertmoney = money * tool.child("Nominal").text().as_double() / tool.child("Value").text().as_double(); // формула расчёта конвертации
-			}
-			else {
-				throw std::invalid_argument("unknown wallet type"); // бросок исключения по несовпадению буквенного кода
-				break;
+				convertmoney = money / tool.child("Nominal").text().as_double() * tool.child("Value").text().as_double(); // формула расчёта конвертации
 			}
 		}
+		if (!convertmoney) std::cout << "Вы ввели неправильный буквенный код.";
 		std::cout << money << " " << namestr << " это " << convertmoney << " в рублях. ";
 	}
 }

@@ -160,9 +160,9 @@
     <Import Project="packages\zlib.1.2.8.1\build\native\zlib.targets" Condition="Exists('packages\zlib.1.2.8.1\build\native\zlib.targets')" />
     <Import Project="packages\openssl.1.0.1.21\build\native\openssl.targets" Condition="Exists('packages\openssl.1.0.1.21\build\native\openssl.targets')" />
     <Import Project="packages\curl.7.30.0.2\build\native\curl.targets" Condition="Exists('packages\curl.7.30.0.2\build\native\curl.targets')" />
-    <Import Project="packages\pugixml.1.12.0\build\native\pugixml.targets" Condition="Exists('packages\pugixml.1.12.0\build\native\pugixml.targets')" />
     <Import Project="packages\libssh2.redist.1.4.3.3\build\native\libssh2.redist.targets" Condition="Exists('packages\libssh2.redist.1.4.3.3\build\native\libssh2.redist.targets')" />
     <Import Project="packages\libssh2.1.4.3.3\build\native\libssh2.targets" Condition="Exists('packages\libssh2.1.4.3.3\build\native\libssh2.targets')" />
+    <Import Project="packages\pugixml.1.12.0\build\native\pugixml.targets" Condition="Exists('packages\pugixml.1.12.0\build\native\pugixml.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
@@ -175,8 +175,8 @@
     <Error Condition="!Exists('packages\openssl.1.0.1.21\build\native\openssl.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\openssl.1.0.1.21\build\native\openssl.props'))" />
     <Error Condition="!Exists('packages\openssl.1.0.1.21\build\native\openssl.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\openssl.1.0.1.21\build\native\openssl.targets'))" />
     <Error Condition="!Exists('packages\curl.7.30.0.2\build\native\curl.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\curl.7.30.0.2\build\native\curl.targets'))" />
-    <Error Condition="!Exists('packages\pugixml.1.12.0\build\native\pugixml.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\pugixml.1.12.0\build\native\pugixml.targets'))" />
     <Error Condition="!Exists('packages\libssh2.redist.1.4.3.3\build\native\libssh2.redist.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\libssh2.redist.1.4.3.3\build\native\libssh2.redist.targets'))" />
     <Error Condition="!Exists('packages\libssh2.1.4.3.3\build\native\libssh2.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\libssh2.1.4.3.3\build\native\libssh2.targets'))" />
+    <Error Condition="!Exists('packages\pugixml.1.12.0\build\native\pugixml.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\pugixml.1.12.0\build\native\pugixml.targets'))" />
   </Target>
 </Project>
