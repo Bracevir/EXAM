@@ -26,9 +26,6 @@
     <ClInclude Include="func.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="packages\curl.7.30.0.2\build\native\include\curl\curl.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

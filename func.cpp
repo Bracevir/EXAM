@@ -2,15 +2,17 @@
 #include <stdio.h>
 #include <iostream>
 #include <string>
-#include <fstream>
 #include "func.h"
+/*библиотеки ниже можно добавить по ПКМ по проекту - Управление пакетами NuGet лоя решения - 
+Поиск - установить по названиям curl и pugixml
+файлы *.lib и libcurl-x64.dll положить в папку с проектом*/
 #include "curl/curl.h" // библиотека отвечает за работу с данными и файлами по url
 #pragma comment(lib, "libcurl.lib")
 #include "pugixml.hpp" // библиотека разборки xml
 #pragma comment(lib, "pugixml.lib") // комментарий уточнения для поиска pugixml.hpp средой в файле компилированной библиотеки pugixml.lib
-#pragma warning(disable : 4996)
+#pragma warning(disable : 4996) // комментарий для пропуска проверки совместимости библиотек С в проекте из-за ошибки LNK4996
 
-using namespace pugi;
+using namespace pugi; // подключение пространства имён pugixml
 
 size_t write_data(void* ptr, size_t size, size_t nmemb, FILE* stream) { // объект создан для использования библиотеки curl.h
 	size_t written = fwrite(ptr, size, nmemb, stream);
@@ -18,10 +20,9 @@ size_t write_data(void* ptr, size_t size, size_t nmemb, FILE* stream) { // объек
 }
 
 
-void showWallet(std::string path) { // эта функция считывает и выводит список курсов валдют из файла
-	setlocale(LC_ALL, "russian");
+void showWallet() { // эта функция считывает и выводит список курсов валдют из файла
 	std::cout << "Курс валют:" << std::endl;
-	xml_document doc;
+	xml_document doc; // создание объекта класса xml_document
 	xml_parse_result result = doc.load_file("daily.xml"); // открытие файла по заданному пути
 	if (!doc.load_file("daily.xml")) { // проверка открытия файла
 		std::cout << "Не могу открыть файл.";
@@ -44,33 +45,83 @@ void showWallet(std::string path) { // эта функция считывает и выводит список ку
 	std::cout << std::endl;
 }
 
-/*template <typename T> T convertWallet(T num) { // Эта функция конвертирует валюту
-	std::ifstream fin;
-	fin.open(path);
-	if (fin.is_open()) {
-		std::cout << "Введите, какую валюту хотите конвертировать:" << std::endl;
-		std::string str;
-		std::cin >> str;
-		if (str = 'rub' || str = 'RUB') {
-
-		}
+void convertWallet() { // Эта функция конвертирует валюту
+	std::cout << "Введите, в какую валюту хотите конвертировать по буквенному коду (пример USD):" << std::endl;
+	std::string str;
+	std::cin >> str;
+	std::cout << "Сколько рублей хотите конвертировать?" << std::endl;
+	double money, convertmoney=0;
+	std::cin >> money;
+	if (str == "rub" || str == "RUB") { // проверка на ввод рублей
+		std::cout << "Это " << money << " рублей" << std::endl;
 	}
-	else
-		std::cout << "Ошибка открытия файла." << std::endl;
-	fin.close();
-}*/
+	xml_document doc; // создание объекта класса xml_document
+	xml_parse_result result = doc.load_file("daily.xml"); // открытие файла
+	if (!doc.load_file("daily.xml")) { // проверка открытия файла
+		std::cout << "Не могу открыть файл.";
+		throw std::invalid_argument("no file in directory"); // бросок исключения по открытию файла
+	}
+	else {
+		xml_node Wallet = doc.child("ValCurs"); // определение параметров искомой ноды Wallet
+		std::string namestr;
+		for (pugi::xml_node tool : Wallet.children("Valute")) { // перебор дочерних тегов нод
+			if (str == tool.child("CharCode").text().as_string()) { // сравнение значения ноды с введённой строкой
+				namestr = tool.child("Name").text().as_string(); // запись ноды Name в переменную типа строка
+				convertmoney = money / tool.child("Nominal").text().as_double() * tool.child("Value").text().as_double(); // формула расчёта конвертации
+			}
+			else {
+				throw std::invalid_argument("unknown wallet type"); // бросок исключения по несовпадению буквенного кода
+				break;
+			}
+		}
+		std::cout << "Валюта " << namestr << " = " << convertmoney << " рублей.";
+	}
+}
+
+void convertWalletIntoRub() { // конвертация валюты в рубли
+	std::cout << "Введите, какую валюту хотите конвертировать по буквенному коду (пример USD):" << std::endl;
+	std::string str;
+	std::cin >> str;
+	std::cout << "Сколько денег хотите конвертировать?" << std::endl;
+	double money, convertmoney = 0;
+	std::cin >> money;
+	if (str == "rub" || str == "RUB") { // проверка на ввод рублей
+		std::cout << "Это " << money << " рублей" << std::endl;
+	}
+	xml_document doc; // создание объекта класса xml_document
+	xml_parse_result result = doc.load_file("daily.xml"); // открытие файла
+	if (!doc.load_file("daily.xml")) { // проверка открытия файла
+		std::cout << "Не могу открыть файл.";
+		throw std::invalid_argument("no file in directory"); // бросок исключения по открытию файла
+	}
+	else {
+		xml_node Wallet = doc.child("ValCurs"); // определение параметров искомой ноды Wallet
+		std::string namestr;
+		for (pugi::xml_node tool : Wallet.children("Valute")) { // перебор дочерних тегов нод
+			if (str == tool.child("CharCode").text().as_string()) { // сравнение значения ноды с введённой строкой
+				namestr = tool.child("Name").text().as_string(); // запись ноды Name в переменную типа строка
+				convertmoney = money * tool.child("Nominal").text().as_double() / tool.child("Value").text().as_double(); // формула расчёта конвертации
+			}
+			else {
+				throw std::invalid_argument("unknown wallet type"); // бросок исключения по несовпадению буквенного кода
+				break;
+			}
+		}
+		std::cout << money << " " << namestr << " это " << convertmoney << " в рублях. ";
+	}
+}
 
 void newWallet() { // обновляет курсы валют
-	CURL* curl = curl_easy_init();
-	FILE* file = fopen("daily.xml", "wb");
-	std::string readBuffer;
-	curl_easy_setopt(curl, CURLOPT_URL, "https://www.cbr-xml-daily.ru/daily.xml");
-	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
-	curl_easy_setopt(curl, CURLOPT_WRITEDATA, file);
-	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
-	CURLcode response = curl_easy_perform(curl);
-	curl_easy_cleanup(curl);
-	fclose(file);
+	CURL* curl = curl_easy_init(); // инициализация объекта curl
+	FILE* file = fopen("daily.xml", "wb"); // открытие файла методом языка C для curl
+	//std::string readBuffer;
+	curl_easy_setopt(curl, CURLOPT_URL, "https://www.cbr-xml-daily.ru/daily.xml"); // запрос к URL
+	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data); // вызов объекта write_data для записи в файл
+	curl_easy_setopt(curl, CURLOPT_WRITEDATA, file); // запись файла
+	//curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer); // запись строки
+	CURLcode response = curl_easy_perform(curl); // тип перечисления CURLcode
+	curl_easy_cleanup(curl); // очистка параметров curl для экономии памяти
+	fclose(file); // закрытие файла
 
-	std::cout << readBuffer << std::endl;
+	//std::cout << readBuffer << std::endl;
 }

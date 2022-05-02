@@ -148,7 +148,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="func.h" />
-    <ClInclude Include="packages\curl.7.30.0.2\build\native\include\curl\curl.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -1,5 +1,9 @@
 #pragma once
 
-void showWallet(std::string path);
+void showWallet();
+
+void convertWallet();
+
+void convertWalletIntoRub();
 
 void newWallet();
